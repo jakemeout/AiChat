@@ -9,7 +9,7 @@ import Input from "../Input/Input";
 
 import "./Chat.css";
 
-const ENDPOINT = "https://localhost:5000";
+const ENDPOINT = "localhost:5000";
 
 let socket;
 
@@ -21,12 +21,12 @@ const Chat = ({ location }) => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const { name: username, room: chatrooms } = queryString.parse(location.search);
+    const { name, room } = queryString.parse(location.search);
 
     socket = io(ENDPOINT);
 
-    setRoom(chatrooms);
-    setName(username);
+    setRoom(room);
+    setName(name);
 
     socket.emit("join", { name, room }, (error) => {
       if (error) {
@@ -36,12 +36,12 @@ const Chat = ({ location }) => {
   }, [ENDPOINT, location.search]);
 
   useEffect(() => {
-    socket.on("message", (msg) => {
-      setMessages([...messages, msg]);
+    socket.on("message", (message) => {
+      setMessages((messages) => [...messages, message]);
     });
 
-    socket.on("roomData", ({ usr }) => {
-      setUsers(usr);
+    socket.on("roomData", ({ users }) => {
+      setUsers(users);
     });
   }, []);
 
@@ -68,5 +68,4 @@ const Chat = ({ location }) => {
     </div>
   );
 };
-
 export default Chat;
